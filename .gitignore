@@ -1,0 +1,17 @@
+# data (not in git)
+*.zip
+Dataset/
+
+# training outputs
+runs/
+*.pt
+*.pth
+*.onnx
+
+# python / jupyter
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store

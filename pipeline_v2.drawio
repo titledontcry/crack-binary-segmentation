@@ -1,0 +1,125 @@
+<mxfile host="app.diagrams.net" scale="1" border="0">
+  <diagram name="Page-1" id="pipeline-v2">
+    <mxGraphModel dx="1591" dy="1256" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- Data side -->
+        <mxCell id="datasets" parent="1" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" value="&lt;div&gt;&lt;b&gt;Datasets&lt;/b&gt;&lt;/div&gt;&lt;div&gt;Public + UAV&lt;/div&gt;" vertex="1">
+          <mxGeometry height="90" width="90" x="90" y="90" as="geometry" />
+        </mxCell>
+        <mxCell id="collection" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;Data Collection&lt;/b&gt;&lt;div&gt;GT mask + dedup&lt;/div&gt;&lt;div&gt;(SHA-256 + cross-source pHash)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="200" x="225" y="105" as="geometry" />
+        </mxCell>
+        <mxCell id="e-ds-col" edge="1" parent="1" source="datasets" target="collection" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="prep-group" connectable="0" parent="1" style="group" value="" vertex="1">
+          <mxGeometry height="270" width="270" x="190" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="prep" parent="prep-group" style="rounded=1;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="270" width="270" as="geometry" />
+        </mxCell>
+        <mxCell id="prep-title" parent="prep-group" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;Data preparation &amp;amp; Preprocessing&lt;/b&gt;" vertex="1">
+          <mxGeometry height="32" width="225" x="22.5" y="10.8" as="geometry" />
+        </mxCell>
+        <mxCell id="prep-1" parent="prep-group" style="rounded=1;whiteSpace=wrap;html=1;" value="Pairing, Binary mask,&lt;div&gt;Group-aware split (by parent photo)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="54" width="225" x="22.5" y="43.2" as="geometry" />
+        </mxCell>
+        <mxCell id="prep-2" parent="prep-group" style="rounded=1;whiteSpace=wrap;html=1;" value="Normalize (ImageNet mean/std)" vertex="1">
+          <mxGeometry height="54" width="225" x="22.5" y="118.8" as="geometry" />
+        </mxCell>
+        <mxCell id="prep-3" parent="prep-group" style="rounded=1;whiteSpace=wrap;html=1;" value="Augment&lt;div&gt;(flip, rotate, color, blur, scale)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="54" width="225" x="22.5" y="193.3" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p1-p2" edge="1" parent="prep-group" source="prep-1" target="prep-2" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-p2-p3" edge="1" parent="prep-group" source="prep-2" target="prep-3" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-col-prep" edge="1" parent="1" source="collection" target="prep" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Models + training -->
+        <mxCell id="unet" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;U-Net&lt;/b&gt;&lt;div&gt;Baseline&lt;/div&gt;&lt;div&gt;ResNet34 enc (ImageNet)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="140" x="520" y="105" as="geometry" />
+        </mxCell>
+        <mxCell id="convnext" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;ConvNeXt-UPerNet&lt;/b&gt;&lt;div&gt;ImageNet pretrained&lt;/div&gt;&lt;div&gt;+ full-res head&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="140" x="680" y="105" as="geometry" />
+        </mxCell>
+        <mxCell id="train" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;Model training&lt;/b&gt;&lt;div&gt;BCE + batch-Dice, AdamW, AMP&lt;/div&gt;" vertex="1">
+          <mxGeometry height="54" width="300" x="520" y="328" as="geometry" />
+        </mxCell>
+        <mxCell id="e-unet-train" edge="1" parent="1" source="unet" target="train" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.233;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-cnx-train" edge="1" parent="1" source="convnext" target="train" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.767;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-prep-train" edge="1" parent="1" source="prep" target="train" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Validation (iterate) -->
+        <mxCell id="val" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;Validation &amp;amp; Comparison&lt;/b&gt;&lt;div&gt;IoU, Dice, P/R/F1, tolerance-F1, clDice&lt;/div&gt;&lt;div&gt;per crack class / source; tune threshold, TTA&lt;/div&gt;" vertex="1">
+          <mxGeometry height="64" width="300" x="520" y="430" as="geometry" />
+        </mxCell>
+        <mxCell id="e-train-val" edge="1" parent="1" source="train" target="val" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="e-loop" edge="1" parent="1" source="val" target="prep" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="490" y="462" />
+              <mxPoint x="490" y="520" />
+              <mxPoint x="325" y="520" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="loop-label" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="Re-iterate on &lt;b&gt;validation set only&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="240" x="205" y="522" as="geometry" />
+        </mxCell>
+
+        <!-- Final test (once) -->
+        <mxCell id="test" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;Final Test&lt;/b&gt; (held-out, run once)&lt;div&gt;Public merged test set, frozen model + threshold&lt;/div&gt;" vertex="1">
+          <mxGeometry height="54" width="300" x="520" y="550" as="geometry" />
+        </mxCell>
+        <mxCell id="e-val-test" edge="1" parent="1" source="val" target="test" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Inference on drone -->
+        <mxCell id="infer" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;Batch inference (on PC / GPU)&lt;/b&gt;&lt;div&gt;Drone images → PC (SD card / cloud), read EXIF&lt;/div&gt;&lt;div&gt;Full-res sliding-window tiling (overlap + blend)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="64" width="300" x="520" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="e-test-infer" edge="1" parent="1" source="test" target="infer" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="drone-test" parent="1" style="rounded=1;whiteSpace=wrap;html=1;dashed=1;" value="&lt;b&gt;Drone field test set&lt;/b&gt;&lt;div&gt;own drone images + GT&lt;/div&gt;&lt;div&gt;&lt;i&gt;(later phase)&lt;/i&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="64" width="280" x="185" y="660" as="geometry" />
+        </mxCell>
+        <mxCell id="e-drone-infer" edge="1" parent="1" source="drone-test" target="infer" style="endArrow=classic;html=1;rounded=0;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Final output + app -->
+        <mxCell id="output" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;Final output&lt;/b&gt;&lt;div&gt;Refine (remove small CC, close gaps)&lt;/div&gt;&lt;div&gt;Skeleton + EDT → length, width (px → mm via GSD)&lt;/div&gt;" vertex="1">
+          <mxGeometry height="64" width="300" x="520" y="780" as="geometry" />
+        </mxCell>
+        <mxCell id="e-infer-out" edge="1" parent="1" source="infer" target="output" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="webapp" parent="1" style="rounded=1;whiteSpace=wrap;html=1;" value="&lt;b&gt;Web app / Dashboard&lt;/b&gt;" vertex="1">
+          <mxGeometry height="64" width="280" x="185" y="780" as="geometry" />
+        </mxCell>
+        <mxCell id="e-out-web" edge="1" parent="1" source="output" target="webapp" style="endArrow=classic;html=1;rounded=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" value="">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
