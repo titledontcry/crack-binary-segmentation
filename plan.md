@@ -9,7 +9,7 @@ Dataset หลัก: `/Users/attachatchannakorn/Documents/crack-binary-segmenta
 
 ## ✅ Progress Checklist
 
-อัปเดตล่าสุด: 2026-09-26
+อัปเดตล่าสุด: 2026-09-27
 
 ### เสร็จแล้ว
 - [x] สำรวจ dataset ทั้ง 3 folder → เลือกใช้ `final_merged_dataset_v1` (อีก 2 folder เป็น source ที่ merge เข้าไปแล้ว)
@@ -24,9 +24,15 @@ Dataset หลัก: `/Users/attachatchannakorn/Documents/crack-binary-segmenta
 - [x] ตรวจ pHash ทั้ง dataset (`scripts/phash_check.py` → `reports/phash/`) → **พบ leakage ใน UAV_Crack_Detection** (รายละเอียดใน Phase 0)
 - [x] แก้ leakage UAV_Crack_Detection (แบบ A: เก็บ 1 รูปต่อภาพ) → `manifest_v2.csv` (`scripts/make_manifest_v2.py`)
 
+- [x] เขียน `train.ipynb` (notebook เดียว: config → data → aug → loader → sanity → model → loss/metrics → optimizer → train → val analysis → final test)
+- [x] ทดสอบ notebook ครบทุก cell บน subset 3% × 2 epoch (รวม cell Final Test) → ผ่าน
+  - บน Mac: `num_workers=0` (fork worker ค้างบน macOS), fp32 (fp16 บน MPS ช้ากว่า)
+  - ความเร็ว M2: ~1.9 s/step (batch 8) → **~39 นาที/epoch**
+  - weights ResNet34 โหลดเก็บใน HF cache แล้ว (เน็ตช้า/`hf-xet` ค้าง → โหลดด้วย curl)
+
 ### กำลังจะทำต่อ
-- [ ] `Dataset` / `DataLoader` + augmentation (Phase 1)
-- [ ] U-Net baseline ครบลูป (Phase 2–4)
+- [ ] Train U-Net baseline เต็ม dataset (รอตัดสินใจจำนวน epoch)
+- [ ] Validation analysis + เลือก threshold/TTA (Phase 4)
 
 ### ทำทีหลัง
 - [ ] Drone field test set (Phase 9)
@@ -143,6 +149,8 @@ Flow: โดรนบินถ่ายภาพ → ดึงภาพเข้
 5. แปลง px → mm ด้วย **GSD** = (sensor width × distance to surface) / (focal length × image width)
    - ถ้าถ่ายผนัง/สะพานในแนวราบ ต้องใช้ **ระยะถึงพื้นผิว** ไม่ใช่ altitude จาก GPS
 6. Output: mask overlay, polyline ของรอยร้าว, ตารางความยาว/ความกว้าง (JSON)
+
+> ⚠️ ข้อสังเกต: GT mask ของบาง source (เช่น CRACK500, Volker) หนากว่ารอยร้าวจริงมาก → ความกว้างจาก EDT จะ **overestimate** ถ้าไม่ calibrate กับการวัดจริง (ดู Phase 9)
 
 ## Phase 8 — Web app / Dashboard
 
