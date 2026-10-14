@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>โครงการและรอบตรวจ · CrackStation</title>
+  <link rel="stylesheet" href="/static/projects.css">
+</head>
+<body>
+  <header><a class="brand" href="/">⌘ Crack<span>Station</span></a><span>โครงการและรอบตรวจ</span><a href="/">← ภาพรวม</a></header>
+  <main>
+    <section class="intro"><div><p class="eyebrow">INSPECTION LIBRARY</p><h1>โครงการและรอบตรวจ</h1><p>โฟลเดอร์ข้อมูลบนเครื่องแสดงเป็นรอบตรวจในเว็บ ภาพเดิมไม่ถูกย้าย</p></div><div class="actions"><button id="new-project">+ สร้างโครงการ</button><button id="start-flight" class="primary">● เริ่มรับภาพรอบใหม่</button><button id="stop-flight" class="danger" hidden>■ หยุดรับภาพ</button></div></section>
+    <p id="active-status" class="status"></p><p id="message" role="status" hidden></p>
+    <div class="layout"><aside><h2>โฟลเดอร์โครงการ</h2><div id="project-list"></div><button id="inbox-button" class="folder" type="button">▣ กล่องพักภาพ <span id="inbox-count">…</span></button></aside>
+      <section class="content"><div class="content-head"><div><h2 id="selection-title">เลือกรอบตรวจ</h2><p id="selection-subtitle">เลือกโครงการและรอบตรวจจากด้านซ้าย</p></div><input id="image-search" type="search" placeholder="ค้นหาชื่อภาพ" aria-label="ค้นหาชื่อภาพ" hidden></div><div id="flight-list" class="flight-list"></div><div id="image-grid" class="image-grid"></div><div id="pagination" class="pagination"></div></section></div>
+  </main>
+  <dialog id="photo-dialog"><button id="close-photo" class="close">✕</button><img id="photo-large" alt="ภาพตรวจขนาดใหญ่"><div class="photo-info"><strong id="photo-name"></strong><span id="photo-meta"></span><div><a id="photo-original" target="_blank" rel="noopener">เปิดภาพต้นฉบับ</a><a id="photo-mask" target="_blank" rel="noopener" hidden>เปิด mask</a></div></div><div id="photo-review" class="review-actions" hidden><span id="review-current"></span><button data-decision="confirmed">✓ ยืนยัน AI</button><button data-decision="rejected">✕ ไม่ใช่รอยร้าว</button><button data-decision="uncertain">? ไม่แน่ใจ</button></div></dialog>
+  <script src="/static/projects.js"></script>
+</body>
+</html>

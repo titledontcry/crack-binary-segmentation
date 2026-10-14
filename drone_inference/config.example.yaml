@@ -1,0 +1,14 @@
+# Copy to config.yaml and edit the local settings. config.yaml is intentionally untracked.
+checkpoint: ../runs/20260927_183856_unet_resnet34/best.pt
+device: auto                 # auto, cpu, mps, cuda
+threshold: 0.1               # freeze only after final-test approval
+tile_size: 448
+tile_overlap: 0.25
+min_component_px: 20
+card_severity:
+  # Temporary visual triage thresholds from width_px_max distribution (2026-10-08).
+  # Confirm an engineering criterion before treating these as an inspection limit.
+  warning_width_px: 8.3938
+  critical_width_px: 8.7876
+live_stream_url: ""          # e.g. http://jetson.local:8080/?action=stream
+data_dir: data

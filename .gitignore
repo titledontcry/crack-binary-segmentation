@@ -1,12 +1,18 @@
 # data (not in git)
 *.zip
 Dataset/
+final_road_dataset_cleaned/
 
 # training outputs
 runs/
 *.pt
 *.pth
 *.onnx
+
+# ground-station runtime data and local deployment settings
+drone_inference/data/
+drone_inference/config.yaml
+inspection-*.csv
 
 # python / jupyter
 __pycache__/

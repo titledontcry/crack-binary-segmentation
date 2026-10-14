@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Crack Inspection Ground Station</title><link rel="stylesheet" href="/static/style.css?v=18"><link rel="stylesheet" href="/static/overrides.css?v=20">
+</head>
+<body>
+  <aside class="app-sidebar" aria-label="เมนูหลัก">
+    <div class="sidebar-brand"><span class="brand-mark">⌘</span><strong>Crack<span>Station</span></strong></div>
+    <div class="sidebar-section-label">INSPECTION OVERVIEW</div>
+    <nav class="sidebar-nav"><a id="sidebar-control" href="/">▦ <span>ภาพรวมการตรวจ</span></a><a href="/projects">▰ <span>โครงการและรอบตรวจ</span></a><a id="sidebar-results" href="/#inspection-results">▧ <span>รายการภาพตรวจ</span></a><a id="sidebar-review" href="/review">✓ <span>Human Review</span></a></nav>
+    <div class="sidebar-session"><span>รอบตรวจปัจจุบัน</span><strong id="sidebar-session-id">กำลังเชื่อมต่อ…</strong></div>
+  </aside>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">⌘</span><strong>Crack<span>Station</span></strong></div>
+    <div class="topbar-page"><strong>Inspection Overview</strong><span>ภาพจากโดรน · ผลตรวจ AI · ข้อมูลการบิน</span></div>
+    <nav><a id="control-nav" href="/">⌘ Control</a><a href="/projects">▰ โครงการ</a><a id="human-review-nav" class="human-review-nav" href="/review">✓ Human Review</a></nav>
+    <div class="top-status"><span id="health">กำลังเชื่อมต่อ…</span><b id="clock"></b></div>
+  </header>
+
+  <main id="dashboard-view" class="console">
+    <section class="video-card panel">
+      <div class="video-top"><span class="eyebrow">UAV IMAGE / CRACK DETECTION</span><div class="view-switch" aria-label="เลือกภาพที่แสดง"><button id="show-ai" class="active" type="button">ผล AI ล่าสุด</button><button id="show-live" type="button">Live Feed</button></div><button id="layout-reset" class="layout-reset" type="button" title="คืนสัดส่วนเริ่มต้น">↔ คืนสัดส่วน</button></div>
+      <div id="live-box"><img id="featured-image" alt="ผลตรวจ AI ล่าสุด" hidden><div id="featured-empty" class="featured-empty"><span>⌁</span><p>รอภาพตรวจจากโดรน</p><small>ผล AI ล่าสุดจะปรากฏที่นี่เมื่อประมวลผลเสร็จ</small></div><img id="live-image" alt="Live stream from Jetson" hidden><div id="live-empty" hidden><span>◉</span><p>รอ live stream จาก Jetson Nano</p><small>ตั้งค่า <code>live_stream_url</code> ใน config.yaml</small></div></div>
+      <div class="video-bottom"><span id="featured-filename">ยังไม่มีภาพตรวจ</span><span id="featured-time">—</span><span id="featured-origin" class="featured-origin" hidden></span><button id="featured-open" type="button" disabled>เปิดรายละเอียด ↗</button></div>
+    </section>
+    <div id="layout-resizer" class="layout-resizer" role="separator" aria-label="ลากเพื่อปรับสัดส่วน Live กับข้อมูลโดรน" aria-orientation="vertical" aria-valuemin="45" aria-valuemax="82" aria-valuenow="70" tabindex="0"><span></span></div>
+
+    <aside class="overview-side">
+      <section class="overview-card panel"><h2>สถานะการตรวจ</h2><div class="overview-stat"><span>ภาพทั้งหมด</span><strong id="overview-total">0</strong></div><div class="overview-stat"><span>ประมวลผลแล้ว</span><strong id="overview-done">0</strong></div><div class="overview-stat"><span>รอคนตรวจ</span><strong id="overview-pending">0</strong></div><p id="overview-session" class="overview-footnote">รอข้อมูลรอบบิน</p></section>
+      <section class="overview-card panel"><h2>ตำแหน่งภาพล่าสุด</h2><div id="overview-map" class="overview-map"><span>⌖</span><p>ยังไม่มีพิกัด GPS</p></div><a id="overview-map-link" href="#" target="_blank" rel="noopener noreferrer" hidden>เปิดตำแหน่งบนแผนที่ ↗</a><p id="overview-coordinates" class="overview-footnote">พิกัด: —</p></section>
+      <section class="overview-card panel"><h2>ข้อมูลการบินของภาพล่าสุด</h2><div class="overview-kv"><span>แบตเตอรี่</span><b id="battery-value">—</b></div><div class="battery-track"><i id="battery-bar"></i></div><small id="battery-detail">ยังไม่มี telemetry</small><div class="overview-kv"><span>ความเร็ว</span><b id="speed-value">—</b></div><div class="overview-kv"><span>ความสูงกล้อง*</span><b id="height-value">—</b></div><div class="overview-kv"><span>ระยะถึงพื้น</span><b id="distance-value">—</b></div><p class="overview-footnote">* อ้างอิงจุดเริ่มบินจาก barometer/EKF หัก offset 12.5 ซม.; ไม่ใช่ระยะถึงพื้น</p></section>
+      <section class="overview-card panel"><h2>ผลตรวจ AI ของภาพล่าสุด</h2><div class="overview-stat accent"><span>บริเวณรอยร้าว</span><strong id="overview-cracks">—</strong></div><div class="overview-kv"><span>ความยาวรวม</span><b id="overview-length">—</b></div><div class="overview-kv"><span>กว้างสูงสุด</span><b id="overview-width">—</b></div><p id="overview-measure-note" class="overview-footnote">หน่วยจริงจะแสดงเมื่อมี GSD จากกล้องและระยะถ่าย</p></section>
+    </aside>
+
+    <section id="inspection-results" class="inspection-card panel">
+      <div class="section-head"><div><span class="eyebrow">DRONE UPLOAD / LIVE INFERENCE</span><h2>Inspection results</h2><small id="session-label" class="session-label"></small></div></div>
+      <div class="results-toolbar">
+        <div class="result-tabs" role="tablist" aria-label="กรองสถานะภาพ">
+          <button class="filter-tab active" data-filter="all">ทั้งหมด <b id="all-count">0</b></button>
+          <button class="filter-tab" data-filter="done">เสร็จแล้ว <b id="done-count">0</b></button>
+          <button class="filter-tab" data-filter="processing">กำลังทำ <b id="processing-count">0</b></button>
+          <button class="filter-tab" data-filter="queued">รอคิว <b id="queued-count">0</b></button>
+          <button class="filter-tab" data-filter="failed">ผิดพลาด <b id="failed-count">0</b></button>
+        </div>
+        <div class="selection-tools" aria-label="เครื่องมือเลือกภาพ">
+          <button id="select-page" type="button">เลือกทั้งหน้า</button>
+          <button id="clear-selection" type="button" disabled>ล้างที่เลือก</button>
+          <span id="selection-summary" aria-live="polite">ยังไม่ได้เลือก</span>
+        </div>
+        <label class="page-size-control">ต่อหน้า
+          <select id="page-size" aria-label="จำนวนภาพต่อหน้า"><option>25</option><option>50</option><option>100</option></select>
+        </label>
+      </div>
+      <div class="review-filter-row" role="tablist" aria-label="กรองสถานะการตรวจโดยคน">
+        <button class="review-filter-tab" data-review-filter="all">ทั้งหมด <b id="review-all-dashboard-count">0</b></button>
+        <span>สถานะตรวจโดยคน</span><button class="review-filter-tab" data-review-filter="unsubmitted">ยังไม่ส่ง <b id="review-unsubmitted-count">0</b></button><button class="review-filter-tab" data-review-filter="pending">รอคนตรวจ <b id="review-pending-dashboard-count">0</b></button><button class="review-filter-tab" data-review-filter="reviewed">ตรวจแล้ว <b id="reviewed-count">0</b></button>
+      </div>
+      <div id="rows" class="inspection-list" aria-live="polite"></div>
+      <div class="pagination-bar"><span id="range-label">—</span><nav id="pagination" class="pagination" aria-label="หน้ารายการภาพ"></nav></div>
+    </section>
+  </main>
+
+  <main id="review-view" class="review-page" hidden>
+    <header class="review-page-head"><div><span class="eyebrow">QUALITY ASSURANCE / HUMAN REVIEW</span><h1>Human Review Queue</h1><p>ตรวจภาพที่เลือกจาก Dashboard และแก้ mask ด้วยเครื่องมือ Pen ได้ทีละภาพ</p></div><a class="back-dashboard" href="/">← กลับ Dashboard</a></header>
+    <section class="review-page-panel panel"><div class="review-page-toolbar"><div class="review-tabs" role="tablist"><button class="review-tab active" data-review="all">ทั้งหมด <b id="review-queued-count">0</b></button><button class="review-tab" data-review="pending">รอตรวจ <b id="review-pending-count">0</b></button><button class="review-tab" data-review="confirmed">ยืนยัน <b id="review-confirmed-count">0</b></button><button class="review-tab" data-review="corrected">แก้ไข <b id="review-corrected-count">0</b></button><button class="review-tab" data-review="rejected">ไม่ใช่รอยร้าว <b id="review-rejected-count">0</b></button><button class="review-tab" data-review="uncertain">ไม่แน่ใจ <b id="review-uncertain-count">0</b></button></div><label class="page-size-control">ต่อหน้า <select id="review-page-size"><option>25</option><option>50</option><option>100</option></select></label></div><div id="review-rows" class="inspection-list review-list" aria-live="polite"></div><div class="pagination-bar"><span id="review-range-label">—</span><nav id="review-pagination" class="pagination" aria-label="หน้ารายการตรวจโดยคน"></nav></div></section>
+  </main>
+
+  <dialog id="detail" class="review-dialog"><button id="close" aria-label="ปิดภาพใหญ่">×</button><div class="detail-heading"><div><span id="detail-eyebrow" class="eyebrow">รายละเอียดภาพ</span><p id="detail-position" class="detail-position"></p><div class="detail-title-row"><h2 id="detail-title"></h2><button id="copy-filename" class="copy-filename" type="button">คัดลอก</button></div><p id="detail-summary" class="detail-summary"></p></div><div class="detail-navigation" aria-label="เลื่อนดูภาพ"><button id="detail-prev" type="button" aria-label="ภาพก่อนหน้า">←</button><button id="detail-next" type="button" aria-label="ภาพถัดไป">→</button></div></div>
+    <div id="preview-workspace" class="preview-workspace" hidden>
+      <section class="preview-image-panel"><div id="preview-stage" class="preview-stage"><div id="preview-image-layer"><img id="preview-original" alt="ภาพต้นฉบับ"><img id="preview-overlay" alt="AI overlay"></div></div><div class="preview-tools"><button id="preview-original-toggle" type="button">ต้นฉบับ</button><button id="preview-overlay-toggle" type="button">AI overlay</button><span></span><button id="preview-zoom-out" type="button" aria-label="ซูมออก">−</button><button id="preview-zoom-reset" type="button">100%</button><button id="preview-zoom-in" type="button" aria-label="ซูมเข้า">＋</button></div></section>
+      <aside class="preview-inspector"><section><span id="preview-status" class="preview-status"></span><dl id="preview-metadata" class="preview-metadata"></dl></section><section id="preview-review-result" class="preview-review-result" hidden></section><section class="preview-actions"><label id="preview-next-option" class="preview-next-option"><input id="preview-send-next" type="checkbox"> ส่งแล้วไปภาพถัดไป</label><button id="preview-secondary" type="button" hidden></button><button id="preview-primary" type="button"></button></section></aside>
+    </div>
+    <div class="review-workspace">
+      <section class="review-canvas-panel"><div id="review-stage" class="review-stage"><img id="detail-original" alt="ภาพต้นฉบับ"><img id="detail-overlay" alt="AI prediction overlay"><canvas id="review-canvas" aria-label="พื้นที่วาด mask รอยร้าว"></canvas><canvas id="pen-canvas" aria-label="เส้น Pen สำหรับปรับส่วนโค้ง"></canvas></div><p id="review-help" class="review-help">เลือก Pen เพื่อวางจุดและปรับส่วนโค้ง หรือใช้แปรงเก็บรายละเอียด</p></section>
+      <aside class="review-controls">
+        <section class="detail-review-action"><button id="detail-human-review" type="button"></button></section>
+        <section class="review-editor-only"><h3>เครื่องมือ mask</h3><div class="tool-row"><button class="mask-tool active" data-tool="pen">⌁ Pen curve</button><button class="mask-tool" data-tool="brush">✎ แปรง</button><button class="mask-tool" data-tool="erase">⌫ ลบ</button><button id="pen-new-path">＋ เส้นใหม่</button><button id="mask-undo">↶ Undo</button><button id="mask-clear">ล้าง</button></div><label class="slider-label">ความหนาเส้น / แปรง <output id="brush-value">8 px</output><input id="brush-size" type="range" min="2" max="40" value="8"></label><label class="slider-label">ความชัด AI overlay <output id="overlay-value">45%</output><input id="overlay-opacity" type="range" min="0" max="100" value="45"></label></section>
+        <section class="review-decision review-editor-only"><h3>ผลตรวจโดยคน</h3><label>ผู้ตรวจ <input id="reviewer-name" placeholder="เช่น Arnon"></label><label>ผลการตรวจ <select id="review-decision"><option value="confirmed">ยืนยันรอยร้าว</option><option value="corrected">แก้ไข mask แล้ว</option><option value="rejected">ไม่ใช่รอยร้าว</option><option value="uncertain">ไม่แน่ใจ / ต้องตรวจซ้ำ</option></select></label><label>หมายเหตุ <textarea id="review-note" rows="4" placeholder="รายละเอียดจุดที่ตรวจ หรือเหตุผลในการตัดสิน"></textarea></label><button id="review-save" class="review-save">บันทึกผลตรวจ</button><p id="review-save-status" class="review-save-status"></p></section>
+        <details class="review-editor-only"><summary>ข้อมูลภาพและ AI</summary><pre id="detail-data"></pre></details>
+      </aside>
+    </div>
+  </dialog>
+  <section id="selection-action-bar" class="selection-action-bar" aria-live="polite" aria-label="ส่งภาพไปตรวจโดยคน">
+    <div id="selection-action-default" class="selection-action-default"><strong id="selection-bar-count">✓ เลือกแล้ว 0 ภาพ</strong><button id="selection-bar-clear" class="selection-clear" type="button">ล้างที่เลือก</button><button id="selection-bar-send" class="selection-send" type="button">ส่งไป Human Review →</button></div>
+    <div id="selection-action-confirm" class="selection-action-confirm" hidden><strong id="selection-confirm-text">ส่ง 0 ภาพ?</strong><button id="selection-confirm-cancel" class="selection-clear" type="button">ยกเลิก</button><button id="selection-confirm-submit" class="selection-send" type="button">ส่ง</button></div>
+  </section>
+  <aside id="review-toast" class="review-toast" role="status" hidden><span id="review-toast-text"></span><button id="review-toast-retry" type="button" hidden>ลองใหม่</button><button id="review-toast-undo" type="button" hidden>ย้อนกลับ</button><a href="/review">ไปหน้า Human Review</a></aside>
+  <script src="/static/app.js?v=22"></script>
+</body></html>
